@@ -1,0 +1,78 @@
+<style type="text/css">
+  body {
+    font-family: Georgia;
+    font-size: 18px;
+  }
+
+  ol#definitions {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  ol#definitions > li {
+    margin: 0;
+    padding: 5px;
+  }
+
+  ol#definitions > li strong {
+    display: inline-block;
+    min-width: 160px;
+  }
+
+  input[type="text"] {
+    font-family: Georgia;
+    padding: 5px;
+    font-size: 18px;
+  }
+
+  #wordInput {
+    width: 150px;
+  }
+
+  #definitionInput {
+    min-width: 400px;
+    man-width: 1000px;
+  }
+</style>
+
+<form>
+  <input type="text" id="wordInput" autocomplete="off" autocapitalize="off" placeholder="Add a term">
+  <input type="text" id="definitionInput" autocomplete="off" autocapitalize="off" placeholder="... and its definition">
+</form>
+
+<ol id="definitions">
+</ol>
+
+<script type='text/javascript' src='https://cdn.firebase.com/v0/firebase.js'></script>
+
+<script type="text/javascript">
+  window.lexicon = new Firebase('https://lexicon.firebaseio.com/');
+  window.words = lexicon.child('words');
+
+  $definitions = document.querySelector("#definitions")
+
+  document.addEventListener('keyup', function(event){
+    if (event.keyCode === 13) {
+      var word = document.querySelector("#wordInput").value
+      var definition = document.querySelector("#definitionInput").value
+      if (word.length > 1 && definition.length > 1)
+        words.push({word: word, definition: definition});
+    };
+  })
+
+  lexicon.on('value', function(snapshot) {
+    var words = snapshot.val().words
+    if (words) {
+      $definitions.innerHTML = "";
+      Object.keys(words).map(function(key) {
+        var word = words[key]
+        var li = document.createElement('li')
+        li.innerHTML = "<strong>" + word.word + "</strong><span>" + word.definition + "</span>";
+        $definitions.appendChild(li);
+        console.log(word);
+      });
+    }
+  });
+
+</script>
